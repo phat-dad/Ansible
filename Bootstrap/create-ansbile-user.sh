@@ -34,9 +34,9 @@ echo $osinfo
 
 if [[ $osinfo == *"Ubuntu"* ]]; then
     echo "Adding $ansibleuser to suoders"
-    echo "$ansibleuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    sudo echo "$ansibleuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 elif [[ $osinfo == *"Rocky"* ]]; then
     echo "Adding $ansibleuser to suoders"
-    echo "$ansibleuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    sudo echo "$ansibleuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 fi
