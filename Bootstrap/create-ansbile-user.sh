@@ -10,33 +10,47 @@ ansibleuser='anssvc'
 
 echo "This script must be run as root"
 
-echo "Creating user $ansibleuser"
-sudo useradd --create-home $ansibleuser
+osinfo=$(hostnamectl | grep 'Operating System')
+echo $osinfo
 
-echo "Adding ssh keys to $ansibleuser"
+usercheck=$(sudo cat /etc/passwd | grep -i $ansibleuser)
+sudocheck=$(sudo cat /etc/sudoers | grep -i $ansibleuser)
+
+echo "Checking for $ansibleuser Account"
+
+if [[ $usercheck == *$ansibleuser*]]; then
+    echo "$ansibleuser already exists"
+
+else
+    echo "Creating user $ansibleuser"
+    sudo useradd --create-home $ansibleuser
+fi
+
+echo "Creating authorized_keys file for $ansibleuser"
 
 if [ ! -d /home/$ansibleuser/.ssh ]; then
-    echo ".ssh directory does not exist. Creating...."
+    echo "Creating .ssh directory"
     sudo mkdir /home/$ansibleuser/.ssh
 fi
-echo "Creating authorized_keys file"
-sudo echo $pubkey >> /home/$ansibleuser/.ssh/authorized_keys
+
+sudo echo $pubkey > /home/$ansibleuser/.ssh/authorized_keys
 
 echo "Setting Permissions"
 sudo chown -R $ansibleuser:$ansibleuser /home/$ansibleuser/.ssh
 sudo chmod 700 /home/$ansibleuser/.ssh
 sudo chmod 600 /home/$ansibleuser/.ssh/authorized_keys
 
-## Get OS Verion and set permissions in sudoers
-osinfo=$(hostnamectl | grep 'Operating System')
+## Set Sudoers Permissions
 
-echo $osinfo
+if [[ $sudocheck == *$ansibleuser* ]]; then
+    echo "$ansbileuser exists in sudoers file"
+else
+    if [[ $osinfo == *"Ubuntu"* ]]; then
+        echo "Adding $ansibleuser to suoders for Ubuntu OS"
+        sudo echo "$ansibleuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-if [[ $osinfo == *"Ubuntu"* ]]; then
-    echo "Adding $ansibleuser to suoders"
-    sudo echo "$ansibleuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-elif [[ $osinfo == *"Rocky"* ]]; then
-    echo "Adding $ansibleuser to suoders"
-    sudo echo "$ansibleuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    elif [[ $osinfo == *"Rocky"* ]]; then
+        echo "Adding $ansibleuser to suoders for Rocky OS"
+        sudo echo "$ansibleuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    fi
 fi
