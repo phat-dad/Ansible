@@ -54,3 +54,5 @@ else
         sudo echo "$ansibleuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
     fi
 fi
+
+echo "Complete!"
