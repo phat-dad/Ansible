@@ -48,7 +48,7 @@ else
         echo "Adding $ansibleuser to suoders for Ubuntu OS"
         sudo echo "$ansibleuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-    elif [[ $osinfo == *"Rocky"* ]]; then
+    elif [[ $osinfo == *"Rocky"* || $osinfo == *"Red Hat"*  ]]; then
         echo "Adding $ansibleuser to suoders for Rocky OS"
         sudo echo "$ansibleuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
     fi
